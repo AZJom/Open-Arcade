@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Open Source Games</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <h1>AJOM Games</h1>
+        <input type="text" id="gameSearch" onkeyup="filterGames()" placeholder="Search games..." />
+        <button onclick="redirectToRandomGame()">Play a Random Game</button>
+
+        <div class="recently-played">
+            <h2>Recently Played</h2>
+            <ul id="recentlyPlayedList"></ul>
+        </div>
+
+        <select id="sortGames" onchange="sortGames()">
+            <option value="default">Sort by</option>
+            <option value="alphabetical">Alphabetical Order</option>
+            <option value="reverseAlphabetical">Reverse Alphabetical Order</option>
+        </select>
+ 
+
+        <div class="games">
+            <div class="game-thumbnail" onclick="openGamePage('2048')">
+                <img src="images/2048_thumbnail.jpg.png" alt="2048 Thumbnail">
+                <p><strong>2048</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('pong')">
+                <img src="images/pong_thumbnail.jpg.png" alt="Pong Thumbnail">
+                <p><strong>Pong</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('snake')">
+                <img src="images/snake_thumbnail.jpg.png" alt="Snake Thumbnail">
+                <p><strong>Snake</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('pacman')">
+                <img src="images/pacman_thumbnail.jpg.png" alt="Pacman Thumbnail">
+                <p><strong>Pacman</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('clumsy-bird')">
+                <img src="images/clumsy-bird_thumbnail.jpg.png" alt="Clumsy Bird Thumbnail">
+                <p><strong>Clumsy Bird</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('astray')">
+                <img src="images/astray_thumbnail.jpg.jpg" alt="Astray Thumbnail">
+                <p><strong>Astray</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('canvas-tetris')">
+                <img src="images/canvas-tetris_thumbnail.jpg.png" alt="Canvas Tetris Thumbnail">
+                <p><strong>Canvas Tetris</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('hextris')">
+                <img src="images/hextris_thumbnail.jpg.png" alt="Hextris Thumbnail">
+                <p><strong>Hextris</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('racer')">
+                <img src="images/racer_thumbnail.jpg.jpg" alt="Racer Thumbnail">
+                <p><strong>Racer</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('0hh1')">
+                <img src="images/0hh1_thumbnail.jpg.jpg" alt="0hh1 Thumbnail">
+                <p><strong>0hh1</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('reactle')">
+                <img src="images/reactle_thumbnail.jpg.png" alt="Reactle Thumbnail">
+                <p><strong>Reactle</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('mk')">
+                <img src="images/mk_thumbnail.jpg" alt="MK Thumbnail">
+                <p><strong>MK</strong></p>
+            </div>
+            <div class="game-thumbnail" onclick="openGamePage('tic-tac-toe')">
+                <img src="images/tic-tac-toe_thumbnail.jpg.png" alt="Tic Tac Toe Thumbnail">
+                <p><strong>Tic Tac Toe</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openGamePage(game) {
+            addToRecentlyPlayed(game)
+            window.location.href = 'game_pages/' + game + '.html';
+        }
+       
+        function filterGames() {
+            const input = document.getElementById('gameSearch');
+            const filter = input.value.toUpperCase();
+            const games = document.querySelectorAll('.game-thumbnail');
+
+            games.forEach(game => {
+                const title = game.querySelector('strong').innerText.toUpperCase();
+                if (title.indexOf(filter) > -1) {
+                    game.style.display = '';
+                } else {
+                    game.style.display = 'none';
+                }
+            });
+        }
+
+        function redirectToRandomGame() {
+            // List of available games
+            const gamesList = [
+                '2048', 'pong', 'snake', 'pacman', 'clumsy-bird', 'astray', 
+                'canvas-tetris', 'hextris', 'racer', '0hh1', 'reactle', 'mk', 'tic-tac-toe'
+            ];
+
+            // Generate a random game index
+            const randomIndex = Math.floor(Math.random() * gamesList.length);
+            
+            // Redirect to the random game page
+            const randomGame = gamesList[randomIndex];
+            window.location.href = 'game_pages/' + randomGame + '.html';
+        }
+
+        function addToRecentlyPlayed(game) {
+        const recentlyPlayed = JSON.parse(localStorage.getItem('recentlyPlayed')) || [];
+        
+        // Remove the game if it's already in the list to display it at the top
+        const index = recentlyPlayed.indexOf(game);
+        if (index !== -1) {
+            recentlyPlayed.splice(index, 1);
+        }
+        
+        // Add the game to the beginning of the list
+        recentlyPlayed.unshift(game);
+        
+        // Store the updated list in local storage (limit to, for example, 5 games)
+        localStorage.setItem('recentlyPlayed', JSON.stringify(recentlyPlayed.slice(0, 5)));
+        
+        // Update the display of recently played games
+        displayRecentlyPlayed();
+    }
+    
+    // Function to display recently played games
+    function displayRecentlyPlayed() {
+        const recentlyPlayed = JSON.parse(localStorage.getItem('recentlyPlayed')) || [];
+        const recentlyPlayedList = document.getElementById('recentlyPlayedList');
+        
+        // Clear the list before updating it
+        recentlyPlayedList.innerHTML = '';
+        
+        // Display each recently played game
+        recentlyPlayed.forEach(game => {
+            const listItem = document.createElement('li');
+            listItem.textContent = game;
+            listItem.onclick = function() {
+                window.location.href = 'game_pages/' + game + '.html';
+            };
+            recentlyPlayedList.appendChild(listItem);
+        });
+    }
+    
+    <!-- Inside the <script> tag -->
+
+    function sortGames() {
+        const sortOption = document.getElementById('sortGames').value;
+        const gamesContainer = document.querySelector('.games');
+        const games = Array.from(gamesContainer.querySelectorAll('.game-thumbnail'));
+        
+        if (sortOption === 'alphabetical') {
+            games.sort((a, b) => {
+                const titleA = a.querySelector('strong').innerText.toUpperCase();
+                const titleB = b.querySelector('strong').innerText.toUpperCase();
+                return titleA.localeCompare(titleB);
+            });
+        } else if (sortOption === 'reverseAlphabetical') {
+            games.sort((a, b) => {
+                const titleA = a.querySelector('strong').innerText.toUpperCase();
+                const titleB = b.querySelector('strong').innerText.toUpperCase();
+                return titleB.localeCompare(titleA);
+            });
+        }
+        
+        // Rearrange the games based on the sorted order
+        games.forEach(game => gamesContainer.appendChild(game));
+    }
+
+
+    // Call displayRecentlyPlayed() when the page loads to show recently played games
+    window.onload = displayRecentlyPlayed;
+
+    </script>
+</body>
+
+</html>
